@@ -2,13 +2,20 @@
 
 #include <array>
 #include <string>
+#include <vector>
 
 #define ROW_COUNT 10
 #define COL_COUNT 10
 
-class amazons
+struct move
 {
-public:
+	int curr[2];
+	int mvCoor[2];
+	int shoot[2];
+};
+
+struct amazons
+{
 	enum coord_status
 	{
 		blank,
@@ -58,7 +65,10 @@ public:
 		const std::string& fileName
 	);
 
-private:
+	// Checks to see if a move is valid,
+	// returning 1 for a valid move, and 0 for an invalid move.
+	bool validate_move(move) const;
+
 	std::array<std::array<int, COL_COUNT>, ROW_COUNT> prevMat = {};
 	std::array<std::array<int, COL_COUNT>, ROW_COUNT> afterMat = {};
 };
