@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <list>
 
 #define ROW_COUNT 10
 #define COL_COUNT 10
@@ -33,6 +34,9 @@ public:
 		white,
 		killed
 	};
+
+	std::array<std::array<int, COL_COUNT>, ROW_COUNT> prevMat = {};
+	std::array<std::array<int, COL_COUNT>, ROW_COUNT> afterMat = {};
 
 	// Not used.
 	// Make a new board.
@@ -77,8 +81,8 @@ public:
 
 	// Checks to see if a move is valid,
 	// returning 1 for a valid move, and 0 for an invalid move.
-	bool validate_move(move) const;
+	bool validate_move(move);
 
-	std::array<std::array<int, COL_COUNT>, ROW_COUNT> prevMat = {};
-	std::array<std::array<int, COL_COUNT>, ROW_COUNT> afterMat = {};
+	// Creates a list of all moves on given board for given player.
+	std::list<move> list_moves();
 };

@@ -28,6 +28,7 @@ void print_board(
 		}
 		std::cout << std::endl;
 	}
+	std::cout << std::endl;
 }
 
 int main(void)
@@ -39,9 +40,19 @@ int main(void)
 
 	amazons a1;
 	a1.read_from_file("TestBoard.txt");
-	//print_board(a1.prevMat);
-	const move m1 = { {7, 6}, {5, 4}, {7, 6} };
-	std::cout << a1.validate_move(m1);
+	print_board(a1.prevMat);
+	// todo: print mv list
+	std::cout << a1.list_moves().size() << std::endl;
+
+	const move m1 = { {7, 6}, {9, 6}, {7, 6} };
+	//std::cout << a1.validate_move(m1);
+	if (a1.validate_move(m1))
+	{
+		print_board(a1.afterMat);
+		a1.prevMat = a1.afterMat;
+
+		//print_board(a1.afterMat);
+	}
 	/////////////////////////////////
 
 	std::getchar();

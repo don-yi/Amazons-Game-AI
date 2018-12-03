@@ -1,8 +1,11 @@
+#include "amazons.h"
+
 #include <fstream>
 #include <cassert>
-
-#include "amazons.h"
 #include <complex>
+
+#define X 0
+#define Y 1
 
 // Read a board from a text file and convert it into a two dimensional array.
 std::array<std::array<int, COL_COUNT>, ROW_COUNT> amazons::read_from_file(
@@ -37,52 +40,11 @@ std::array<std::array<int, COL_COUNT>, ROW_COUNT> amazons::read_from_file(
 	}
 
 	prevMat = board;
+	afterMat = board;
 
 	// Close the file and return.
 	file.close();
 	return board;
-}
-
-// Checks to see if a move is valid,
-// returning 1 for a valid move, and 0 for an invalid move.
-#define X 0
-#define Y 1
-bool amazons::validate_move(const move mv) const
-{
-
-	// Check for the availity of the position.
-	if (prevMat[mv.mvCoor[X]][mv.mvCoor[Y]] != 0 ||
-		(prevMat[mv.shoot[X]][mv.shoot[Y]] != 0 &&
-		!(mv.curr[X] == mv.shoot[X] && mv.curr[Y] == mv.shoot[Y]))
-		)
-	{
-		return false;
-	}
-
-	// Check the movable space from the starting position.
-	// Check the position to move.
-	if (!is_in_range(mv.curr, mv.mvCoor))
-	{
-		return false;
-	}
-	// Check the position to shoot.
-	if (!is_in_range(mv.shoot, mv.mvCoor))
-	{
-		return false;
-	}
-
-	// Check for obstacle in player movement.
-	if (is_blocked(mv.curr, mv.mvCoor, prevMat))
-	{
-		return false;
-	}
-	// Check for obstacle in shooting.
-	if (is_blocked(mv.mvCoor, mv.shoot, prevMat))
-	{
-		return false;
-	}
-
-	return true;
 }
 
 // Check the movable space from the starting position.
@@ -206,4 +168,101 @@ bool amazons::is_blocked(
 	}
 
 	return false;
+}
+
+// Checks to see if a move is valid,
+// returning 1 for a valid move, and 0 for an invalid move.
+bool amazons::validate_move(const move mv)
+{
+	const auto currx = mv.curr[X];
+	const auto curry = mv.curr[Y];
+	const auto mvx = mv.mvCoor[X];
+	const auto mvy = mv.mvCoor[Y];
+	const auto shootx = mv.shoot[X];
+	const auto shooty = mv.shoot[Y];
+
+	// Check for the availity of the position.
+	if (prevMat[mvx][mvy] != 0 ||
+		(prevMat[shootx][shooty] != 0 &&
+			!(currx == shootx && curry == shooty)) ||
+			(mvx == shootx && mvy == shooty)
+		)
+	{
+		return false;
+	}
+
+	// Check the movable space from the starting position.
+	// Check the position to move.
+	if (!is_in_range(mv.curr, mv.mvCoor))
+	{
+		return false;
+	}
+	// Check the position to shoot.
+	if (!is_in_range(mv.shoot, mv.mvCoor))
+	{
+		return false;
+	}
+
+	// Check for obstacle in player movement.
+	if (is_blocked(mv.curr, mv.mvCoor, prevMat))
+	{
+		return false;
+	}
+	// Check for obstacle in shooting.
+	if (is_blocked(mv.mvCoor, mv.shoot, prevMat))
+	{
+		return false;
+	}
+
+	afterMat[mv.mvCoor[X]][mv.mvCoor[Y]] = prevMat[mv.curr[X]][mv.curr[Y]];
+	afterMat[mv.curr[X]][mv.curr[Y]] = blank;
+	afterMat[mv.shoot[X]][mv.shoot[Y]] = killed;
+
+	return true;
+}
+
+std::list<move> amazons::list_moves()
+{
+	std::list<move> res;
+
+	// Look for the player.
+	for (auto i = 0; i < ROW_COUNT; ++i)
+	{
+		for (auto j = 0; j < COL_COUNT; ++j)
+		{
+			if (prevMat[i][j] == black)
+			{
+				// current player position
+				move mv = { {i, j} };
+
+				// every possible moveable coordinates
+				for (auto k = 0; k < ROW_COUNT; ++k)
+				{
+					for (auto l = 0; l < COL_COUNT; ++l)
+					{
+						mv.mvCoor[X] = k;
+						mv.mvCoor[Y] = l;
+
+						// every possible shootable coordinates
+						for (auto m = 0; m < ROW_COUNT; ++m)
+						{
+							for (auto n = 0; n < COL_COUNT; ++n)
+							{
+								mv.shoot[X] = m;
+								mv.shoot[Y] = n;
+
+								// Validate move.
+								if (validate_move(mv))
+								{
+									res.push_back(mv);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return res;
 }
