@@ -1,5 +1,8 @@
 #pragma once
 
+#define X 0
+#define Y 1
+
 #include <array>
 #include <string>
 #include <vector>
@@ -84,5 +87,5 @@ public:
 	bool validate_move(move);
 
 	// Creates a list of all moves on given board for given player.
-	std::list<move> list_moves();
+	std::list<move> list_moves(coord_status player);
 };

@@ -4,9 +4,6 @@
 #include <cassert>
 #include <complex>
 
-#define X 0
-#define Y 1
-
 // Read a board from a text file and convert it into a two dimensional array.
 std::array<std::array<int, COL_COUNT>, ROW_COUNT> amazons::read_from_file(
 	const std::string& fileName
@@ -221,7 +218,7 @@ bool amazons::validate_move(const move mv)
 	return true;
 }
 
-std::list<move> amazons::list_moves()
+std::list<move> amazons::list_moves(const coord_status player)
 {
 	std::list<move> res;
 
@@ -230,7 +227,7 @@ std::list<move> amazons::list_moves()
 	{
 		for (auto j = 0; j < COL_COUNT; ++j)
 		{
-			if (prevMat[i][j] == black)
+			if (prevMat[i][j] == player)
 			{
 				// current player position
 				move mv = { {i, j} };

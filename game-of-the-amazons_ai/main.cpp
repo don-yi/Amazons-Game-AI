@@ -31,6 +31,20 @@ void print_board(
 	std::cout << std::endl;
 }
 
+// Print the list of moves.
+void print_move_list(const std::list<move> li)
+{
+	std::cout << "Possible Target, Move & Shoot Coordinates:" << std::endl;
+	for (auto && move : li)
+	{
+		std::cout << "(" << move.curr[X] << ", " << move.curr[Y] << "), ("
+			<< move.mvCoor[X] << ", " << move.mvCoor[Y] << "), ("
+			<< move.shoot[X] << ", " << move.shoot[Y] << ")"
+			<< std::endl;
+	}
+	std::cout << std::endl;
+}
+
 int main(void)
 {
 	/////////////////////////////////
@@ -41,18 +55,20 @@ int main(void)
 	amazons a1;
 	a1.read_from_file("TestBoard.txt");
 	print_board(a1.prevMat);
-	// todo: print mv list
-	std::cout << a1.list_moves().size() << std::endl;
 
-	const move m1 = { {7, 6}, {9, 6}, {7, 6} };
+	//const move m1 = { {7, 6}, {9, 6}, {7, 6} };
 	//std::cout << a1.validate_move(m1);
-	if (a1.validate_move(m1))
-	{
-		print_board(a1.afterMat);
-		a1.prevMat = a1.afterMat;
 
-		//print_board(a1.afterMat);
-	}
+	//if (a1.validate_move(m1))
+	//{
+	//	print_board(a1.afterMat);
+	//	a1.prevMat = a1.afterMat;
+
+	//	//print_board(a1.afterMat);
+	//}
+
+	print_move_list(a1.list_moves(amazons::black));
+	print_move_list(a1.list_moves(amazons::white));
 	/////////////////////////////////
 
 	std::getchar();
