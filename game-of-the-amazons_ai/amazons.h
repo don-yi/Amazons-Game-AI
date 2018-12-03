@@ -24,6 +24,7 @@ struct amazons
 private:
 	static bool is_blocked(const int* from, const int* dest, board mat);
 	static bool is_in_range(int const* from, int const* dest);
+	static std::list<move> list_possible_moves(int const* currpos, board mat);
 
 public:
 	enum coord_status
@@ -86,12 +87,11 @@ public:
 
 	// Checks to see if a move is valid,
 	// returning 1 for a valid move, and 0 for an invalid move.
-	static bool validate_move(const move mv, board mat);
+	static bool validate_move(move mv, board mat);
 
-	// Creates a list of all possible moves on given board for given player.
-	std::list<move> list_possible_moves(coord_status player, board mat);
+	static std::list<move> list_all_possible_moves(coord_status player, board mat);
 
 	// Returns a move on the given board that can be played
 	// by the specified player.
-	move next_move(coord_status player);
+	move next_move(coord_status player, AI ai);
 };

@@ -49,8 +49,8 @@ bool amazons::is_in_range(int const* from, int const* dest)
 {
 	return !(
 		(from[X] - dest[X] != 0 && from[Y] - dest[Y] != 0)
-			&& (std::abs(from[X] - dest[X])
-				!= std::abs(from[Y] - dest[Y]))
+		&& (std::abs(from[X] - dest[X])
+			!= std::abs(from[Y] - dest[Y]))
 		);
 }
 
@@ -177,7 +177,7 @@ bool amazons::validate_move(const move mv, board mat)
 	// Check for the availity of the position.
 	if (mat[mvx][mvy] != 0 ||
 		(mat[shootx][shooty] != 0 &&
-			(currx != shootx || curry != shooty)) ||
+		(currx != shootx || curry != shooty)) ||
 			(mvx == shootx && mvy == shooty)
 		)
 	{
@@ -214,46 +214,80 @@ bool amazons::validate_move(const move mv, board mat)
 	return true;
 }
 
+// Creates a list of the possible moves on given board for given player.
 std::list<move> amazons::list_possible_moves(
-	const coord_status player, const board mat
+	int const* currpos, const board mat
 )
 {
 	std::list<move> res;
+
+	//// Look for the player.
+	//for (auto i = 0; i < ROW_COUNT; ++i)
+	//{
+	//	for (auto j = 0; j < COL_COUNT; ++j)
+	//	{
+			//if (prevMat[i][j] == player)
+			//{
+				// current player position
+	move mv{};
+	mv.curr[X] = currpos[X];
+	mv.curr[Y] = currpos[Y];
+
+	// every possible moveable coordinates
+	for (auto k = 0; k < ROW_COUNT; ++k)
+	{
+		for (auto l = 0; l < COL_COUNT; ++l)
+		{
+			mv.mvCoor[X] = k;
+			mv.mvCoor[Y] = l;
+
+			// every possible shootable coordinates
+			for (auto m = 0; m < ROW_COUNT; ++m)
+			{
+				for (auto n = 0; n < COL_COUNT; ++n)
+				{
+					mv.shoot[X] = m;
+					mv.shoot[Y] = n;
+
+					// Validate move.
+					if (validate_move(mv, mat))
+					{
+						res.push_back(mv);
+					}
+				}
+			}
+		}
+	}
+	//}
+//	}
+//}
+
+	return res;
+}
+
+// Creates a list of the possible moves on given board for given player.
+std::list<move> amazons::list_all_possible_moves(
+	const coord_status player, const board mat
+)
+{
+	std::list<move> res{};
 
 	// Look for the player.
 	for (auto i = 0; i < ROW_COUNT; ++i)
 	{
 		for (auto j = 0; j < COL_COUNT; ++j)
 		{
-			if (prevMat[i][j] == player)
+			// Push back all the possible moves to a list.
+			int curr[2]{};
+			if (mat[i][j] == player)
 			{
-				// current player position
-				move mv = { {i, j} };
+				curr[X] = i;
+				curr[Y] = j;
 
-				// every possible moveable coordinates
-				for (auto k = 0; k < ROW_COUNT; ++k)
+				auto tmpmyli = list_possible_moves(curr, mat);
+				for (auto & mv : tmpmyli)
 				{
-					for (auto l = 0; l < COL_COUNT; ++l)
-					{
-						mv.mvCoor[X] = k;
-						mv.mvCoor[Y] = l;
-
-						// every possible shootable coordinates
-						for (auto m = 0; m < ROW_COUNT; ++m)
-						{
-							for (auto n = 0; n < COL_COUNT; ++n)
-							{
-								mv.shoot[X] = m;
-								mv.shoot[Y] = n;
-
-								// Validate move.
-								if (validate_move(mv, mat))
-								{
-									res.push_back(mv);
-								}
-							}
-						}
-					}
+					res.push_back(mv);
 				}
 			}
 		}
@@ -262,7 +296,7 @@ std::list<move> amazons::list_possible_moves(
 	return res;
 }
 
-move amazons::next_move(const coord_status player)
+move amazons::next_move(const coord_status player, const AI ai)
 {
 	// Identify the opponent.
 	coord_status opponent;
@@ -276,70 +310,106 @@ move amazons::next_move(const coord_status player)
 	}
 
 	// Get the all possible moves from the both players.
-	auto myli = list_possible_moves(player, prevMat);
-	auto orili = list_possible_moves(opponent, prevMat);
+	auto myli = list_all_possible_moves(player, prevMat);
+	auto oppoli = list_all_possible_moves(opponent, prevMat);
 
-	// Form a list consisting of all moves that minimize opponent’s scope.
+	//// Look for the player.
+	//for (auto i = 0; i < ROW_COUNT; ++i)
+	//{
+	//	for (auto j = 0; j < COL_COUNT; ++j)
+	//	{
+	//		int curr[2]{};
+	//		if (prevMat[i][j] == player)
+	//		{
+	//			curr[X] = i;
+	//			curr[Y] = j;
+	//			auto tmpmyli = list_possible_moves(curr, prevMat);
+	//			for (auto & mv : tmpmyli)
+	//			{
+	//				myli.push_back(mv);
+	//			}
+	//		}
+	//		else if (prevMat[i][j] == opponent)
+	//		{
+	//			curr[X] = i;
+	//			curr[Y] = j;
+	//			auto tmpoppoli = list_possible_moves(curr, prevMat);
+	//			for (auto & mv : tmpoppoli)
+	//			{
+	//				oppoli.push_back(mv);
+	//			}
+	//		}
+	//	}
+	//}
+
 	auto tmpboard = prevMat;
-	auto minsize = orili.size();
-	std::list<move> mvli;
-	for (auto & move : myli)
+	if (ai == minMax)
 	{
-		const auto currx = move.curr[X];
-		const auto curry = move.curr[Y];
-		const auto mvx = move.mvCoor[X];
-		const auto mvy = move.mvCoor[Y];
-		const auto shootx = move.shoot[X];
-		const auto shooty = move.shoot[Y];
-
-		// Make a tmp board with the player moves.
-		tmpboard[mvx][mvy] = tmpboard[currx][curry];
-		tmpboard[currx][curry] = blank;
-		tmpboard[shootx][shooty] = killed;
-
-		// Get the opponents's all possible moves and compare.
-		const auto tmpli = list_possible_moves(opponent, tmpboard);
-
-		if (tmpli.size() <= minsize)
+		// Form a list consisting of all moves that minimize opponent’s scope.
+		auto minscope = oppoli.size();
+		std::list<move> minli;
+		for (auto & move : myli)
 		{
-			if (tmpli.size() < minsize)
+			const auto currx = move.curr[X];
+			const auto curry = move.curr[Y];
+			const auto mvx = move.mvCoor[X];
+			const auto mvy = move.mvCoor[Y];
+			const auto shootx = move.shoot[X];
+			const auto shooty = move.shoot[Y];
+
+			// Make a tmp board with the player moves.
+			tmpboard[mvx][mvy] = tmpboard[currx][curry];
+			tmpboard[currx][curry] = blank;
+			tmpboard[shootx][shooty] = killed;
+
+			// Get the opponents's all possible moves and compare.
+			const auto tmpli = list_all_possible_moves(opponent, tmpboard);
+
+			if (tmpli.size() <= minscope)
 			{
-				minsize = tmpli.size();
-				mvli.clear();
+				if (tmpli.size() < minscope)
+				{
+					minscope = tmpli.size();
+					minli.clear();
+				}
+				minli.push_back(move);
 			}
-			mvli.push_back(move);
+
+			tmpboard = prevMat;
 		}
-
-		tmpboard = prevMat;
-	}
-	// Then choose from the list a move which maximizes own scope.
-	auto maxsize = mvli.size();
-	auto res = mvli.front();
-	for (auto & move : mvli)
-	{
-		const auto currx = move.curr[X];
-		const auto curry = move.curr[Y];
-		const auto mvx = move.mvCoor[X];
-		const auto mvy = move.mvCoor[Y];
-		const auto shootx = move.shoot[X];
-		const auto shooty = move.shoot[Y];
-
-		// Make a tmp board with the player moves.
-		tmpboard[mvx][mvy] = tmpboard[currx][curry];
-		tmpboard[currx][curry] = blank;
-		tmpboard[shootx][shooty] = killed;
-
-		// Get the player's all possible moves and compare.
-		const auto tmpli = list_possible_moves(player, tmpboard);
-
-		if (tmpli.size() > maxsize)
+		// Then choose from the list a move which maximizes own scope.
+		auto maxscope = 0;
+		auto res = minli.front();
+		for (auto & mv : minli)
 		{
-			res = move;
-			maxsize = tmpli.size();
+			const auto currx = mv.curr[X];
+			const auto curry = mv.curr[Y];
+			const auto mvx = mv.mvCoor[X];
+			const auto mvy = mv.mvCoor[Y];
+			const auto shootx = mv.shoot[X];
+			const auto shooty = mv.shoot[Y];
+
+			// Make a tmp board and a move with the player moves.
+			tmpboard[mvx][mvy] = tmpboard[currx][curry];
+			tmpboard[currx][curry] = blank;
+			tmpboard[shootx][shooty] = killed;
+			//move tmpmv = { mv.mvCoor, }
+
+			// Get the player's all possible moves and compare.
+			const auto currscope
+			= list_all_possible_moves(player, tmpboard).size();
+
+			if (currscope > static_cast<const unsigned>(maxscope))
+			{
+				res = mv;
+				maxscope = currscope;
+			}
+
+			tmpboard = prevMat;
 		}
 
-		tmpboard = prevMat;
+		return res;
 	}
 
-	return res;
+	return {};
 }
