@@ -32,7 +32,7 @@ void print_board(
 }
 
 // Print the list of moves.
-void print_move_list(const std::list<move> li)
+void print_possible_moves(const std::list<move> li)
 {
 	std::cout << "Possible Target, Move & Shoot Coordinates:" << std::endl;
 	for (auto && move : li)
@@ -56,6 +56,8 @@ int main(void)
 	a1.read_from_file("TestBoard.txt");
 	print_board(a1.prevMat);
 
+	const auto tmp = a1.next_move(amazons::black);
+
 	//const move m1 = { {7, 6}, {9, 6}, {7, 6} };
 	//std::cout << a1.validate_move(m1);
 
@@ -67,8 +69,8 @@ int main(void)
 	//	//print_board(a1.afterMat);
 	//}
 
-	print_move_list(a1.list_moves(amazons::black));
-	print_move_list(a1.list_moves(amazons::white));
+	//print_possible_moves(a1.list_possible_moves(amazons::black));
+	//print_possible_moves(a1.list_possible_moves(amazons::white));
 	/////////////////////////////////
 
 	std::getchar();

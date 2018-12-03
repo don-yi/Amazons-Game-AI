@@ -55,11 +55,7 @@ bool amazons::is_in_range(int const* from, int const* dest)
 }
 
 // Checks if there's an obstacle while moving or shooting.
-bool amazons::is_blocked(
-	const int* from,
-	const int* dest,
-	std::array<std::array<int, 10>, 10> prevMat
-)
+bool amazons::is_blocked(const int* from, const int* dest, board mat)
 {
 	// Check vertical and horizontal moves.
 	// horizontal moves
@@ -70,7 +66,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < from[Y] - dest[Y]; ++i)
 			{
-				if (prevMat[from[X]][from[Y] - i] != blank)
+				if (mat[from[X]][from[Y] - i] != blank)
 				{
 					return true;
 				}
@@ -81,7 +77,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < dest[Y] - from[Y]; ++i)
 			{
-				if (prevMat[from[X]][from[Y] + i] != blank)
+				if (mat[from[X]][from[Y] + i] != blank)
 				{
 					return true;
 				}
@@ -96,7 +92,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < from[X] - dest[X]; ++i)
 			{
-				if (prevMat[from[X] - i][from[Y]] != blank)
+				if (mat[from[X] - i][from[Y]] != blank)
 				{
 					return true;
 				}
@@ -107,7 +103,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < dest[X] - from[X]; ++i)
 			{
-				if (prevMat[from[X] + i][from[Y]] != blank)
+				if (mat[from[X] + i][from[Y]] != blank)
 				{
 					return true;
 				}
@@ -123,7 +119,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < dest[Y] - from[Y]; ++i)
 			{
-				if (prevMat[from[X] - i][from[Y] + i] != blank)
+				if (mat[from[X] - i][from[Y] + i] != blank)
 				{
 					return true;
 				}
@@ -134,7 +130,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < dest[Y] - from[Y]; ++i)
 			{
-				if (prevMat[from[X] + i][from[Y] + i] != blank)
+				if (mat[from[X] + i][from[Y] + i] != blank)
 				{
 					return true;
 				}
@@ -145,7 +141,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < dest[X] - from[X]; ++i)
 			{
-				if (prevMat[from[X] + i][from[Y] - i] != blank)
+				if (mat[from[X] + i][from[Y] - i] != blank)
 				{
 					return true;
 				}
@@ -156,7 +152,7 @@ bool amazons::is_blocked(
 		{
 			for (auto i = 1; i < from[X] - dest[X]; ++i)
 			{
-				if (prevMat[from[X] - i][from[Y] - i] != blank)
+				if (mat[from[X] - i][from[Y] - i] != blank)
 				{
 					return true;
 				}
@@ -169,7 +165,7 @@ bool amazons::is_blocked(
 
 // Checks to see if a move is valid,
 // returning 1 for a valid move, and 0 for an invalid move.
-bool amazons::validate_move(const move mv)
+bool amazons::validate_move(const move mv, board mat)
 {
 	const auto currx = mv.curr[X];
 	const auto curry = mv.curr[Y];
@@ -179,9 +175,9 @@ bool amazons::validate_move(const move mv)
 	const auto shooty = mv.shoot[Y];
 
 	// Check for the availity of the position.
-	if (prevMat[mvx][mvy] != 0 ||
-		(prevMat[shootx][shooty] != 0 &&
-			!(currx == shootx && curry == shooty)) ||
+	if (mat[mvx][mvy] != 0 ||
+		(mat[shootx][shooty] != 0 &&
+			(currx != shootx || curry != shooty)) ||
 			(mvx == shootx && mvy == shooty)
 		)
 	{
@@ -201,24 +197,26 @@ bool amazons::validate_move(const move mv)
 	}
 
 	// Check for obstacle in player movement.
-	if (is_blocked(mv.curr, mv.mvCoor, prevMat))
+	if (is_blocked(mv.curr, mv.mvCoor, mat))
 	{
 		return false;
 	}
 	// Check for obstacle in shooting.
-	if (is_blocked(mv.mvCoor, mv.shoot, prevMat))
+	if (is_blocked(mv.mvCoor, mv.shoot, mat))
 	{
 		return false;
 	}
 
-	afterMat[mv.mvCoor[X]][mv.mvCoor[Y]] = prevMat[mv.curr[X]][mv.curr[Y]];
-	afterMat[mv.curr[X]][mv.curr[Y]] = blank;
-	afterMat[mv.shoot[X]][mv.shoot[Y]] = killed;
+	//afterMat[mv.mvCoor[X]][mv.mvCoor[Y]] = prevMat[mv.curr[X]][mv.curr[Y]];
+	//afterMat[mv.curr[X]][mv.curr[Y]] = blank;
+	//afterMat[mv.shoot[X]][mv.shoot[Y]] = killed;
 
 	return true;
 }
 
-std::list<move> amazons::list_moves(const coord_status player)
+std::list<move> amazons::list_possible_moves(
+	const coord_status player, const board mat
+)
 {
 	std::list<move> res;
 
@@ -249,7 +247,7 @@ std::list<move> amazons::list_moves(const coord_status player)
 								mv.shoot[Y] = n;
 
 								// Validate move.
-								if (validate_move(mv))
+								if (validate_move(mv, mat))
 								{
 									res.push_back(mv);
 								}
@@ -262,4 +260,59 @@ std::list<move> amazons::list_moves(const coord_status player)
 	}
 
 	return res;
+}
+
+move amazons::next_move(const coord_status player)
+{
+	// Identify the opponent.
+	coord_status opponent;
+	if (player == black)
+	{
+		opponent = white;
+	}
+	else
+	{
+		opponent = black;
+	}
+
+	// Get the all possible moves from the both players.
+	auto myli = list_possible_moves(player, prevMat);
+	auto orili = list_possible_moves(opponent, prevMat);
+
+	// Form a list consisting of all moves that minimize opponent’s scope.
+	std::list<move> minli;
+	auto tmpboard = prevMat;
+	auto minsize = orili.size();
+	for (auto & move : myli)
+	{
+		const auto currx = move.curr[X];
+		const auto curry = move.curr[Y];
+		const auto mvx = move.mvCoor[X];
+		const auto mvy = move.mvCoor[Y];
+		const auto shootx = move.shoot[X];
+		const auto shooty = move.shoot[Y];
+
+		// Make a tmp board with the player moves.
+		tmpboard[mvx][mvy] = tmpboard[currx][curry];
+		tmpboard[currx][curry] = blank;
+		tmpboard[shootx][shooty] = killed;
+
+		// Get the opponents's all possible moves and compare.
+		const auto tmpli = list_possible_moves(opponent, tmpboard);
+
+		if (tmpli.size() <= minsize)
+		{
+			if (tmpli.size() < minsize)
+			{
+				minsize = tmpli.size();
+				minli.clear();
+			}
+			minli.push_back(move);
+		}
+
+		tmpboard = prevMat;
+	}
+	//todo: then choose from this list a move which maximizes own scope.
+
+	return {};
 }

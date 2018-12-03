@@ -1,16 +1,14 @@
 #pragma once
 
-#define X 0
-#define Y 1
-
 #include <array>
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <list>
 
 #define ROW_COUNT 10
 #define COL_COUNT 10
+#define X 0
+#define Y 1
 
 struct move
 {
@@ -19,14 +17,12 @@ struct move
 	int shoot[2];
 };
 
+typedef std::array<std::array<int, COL_COUNT>, ROW_COUNT> board;
+
 struct amazons
 {
 private:
-	static bool is_blocked(
-		const int* from,
-		const int* dest,
-		std::array<std::array<int, 10>, 10> prevMat
-	);
+	static bool is_blocked(const int* from, const int* dest, board mat);
 	static bool is_in_range(int const* from, int const* dest);
 
 public:
@@ -38,14 +34,20 @@ public:
 		killed
 	};
 
-	std::array<std::array<int, COL_COUNT>, ROW_COUNT> prevMat = {};
-	std::array<std::array<int, COL_COUNT>, ROW_COUNT> afterMat = {};
+	enum AI
+	{
+		minMax,
+		maxMin
+	};
+
+	board prevMat = {};
+	board afterMat = {};
 
 	// Not used.
 	// Make a new board.
-	std::array<std::array<int, COL_COUNT>, ROW_COUNT> generate_new_board(void)
+	board generate_new_board(void)
 	{
-		//std::array<std::array<int, COL_COUNT>, ROW_COUNT> newBoard{};
+		//board newBoard{};
 
 		//// Assign player values at the default starting positions.
 		//newBoard[0][3] = 1;
@@ -59,7 +61,7 @@ public:
 		//newBoard[9][6] = 2;
 
 		// temp testing board
-		std::array<std::array<int, COL_COUNT>, ROW_COUNT> newBoard{};
+		board newBoard{};
 
 		for (auto&& eachCol : newBoard)
 		{
@@ -78,14 +80,18 @@ public:
 	}
 
 	// Read a board from a text file and convert it into a two dimensional array.
-	std::array<std::array<int, COL_COUNT>, ROW_COUNT> read_from_file(
+	board read_from_file(
 		const std::string& fileName
 	);
 
 	// Checks to see if a move is valid,
 	// returning 1 for a valid move, and 0 for an invalid move.
-	bool validate_move(move);
+	static bool validate_move(const move mv, board mat);
 
-	// Creates a list of all moves on given board for given player.
-	std::list<move> list_moves(coord_status player);
+	// Creates a list of all possible moves on given board for given player.
+	std::list<move> list_possible_moves(coord_status player, board mat);
+
+	// Returns a move on the given board that can be played
+	// by the specified player.
+	move next_move(coord_status player);
 };
