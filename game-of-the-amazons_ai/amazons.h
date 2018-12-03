@@ -3,6 +3,7 @@
 #include <array>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #define ROW_COUNT 10
 #define COL_COUNT 10
@@ -16,6 +17,15 @@ struct move
 
 struct amazons
 {
+private:
+	static bool is_blocked(
+		const int* from,
+		const int* dest,
+		std::array<std::array<int, 10>, 10> prevMat
+	);
+	static bool is_in_range(int const* from, int const* dest);
+
+public:
 	enum coord_status
 	{
 		blank,

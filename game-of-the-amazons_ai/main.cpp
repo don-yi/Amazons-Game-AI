@@ -1,8 +1,8 @@
+#include "amazons.h"
+
 #include <array>
 #include <iostream>
 #include <string>
-
-#include "amazons.h"
 
 // Print the board in human-readable form.
 void print_board(
@@ -40,7 +40,7 @@ int main(void)
 	amazons a1;
 	a1.read_from_file("TestBoard.txt");
 	//print_board(a1.prevMat);
-	const move m1 = { {9, 7}, {7, 7}, {9, 7} };
+	const move m1 = { {7, 6}, {5, 4}, {7, 6} };
 	std::cout << a1.validate_move(m1);
 	/////////////////////////////////
 
