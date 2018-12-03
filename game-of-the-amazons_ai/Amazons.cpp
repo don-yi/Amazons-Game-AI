@@ -280,9 +280,9 @@ move amazons::next_move(const coord_status player)
 	auto orili = list_possible_moves(opponent, prevMat);
 
 	// Form a list consisting of all moves that minimize opponent’s scope.
-	std::list<move> minli;
 	auto tmpboard = prevMat;
 	auto minsize = orili.size();
+	std::list<move> mvli;
 	for (auto & move : myli)
 	{
 		const auto currx = move.curr[X];
@@ -305,14 +305,41 @@ move amazons::next_move(const coord_status player)
 			if (tmpli.size() < minsize)
 			{
 				minsize = tmpli.size();
-				minli.clear();
+				mvli.clear();
 			}
-			minli.push_back(move);
+			mvli.push_back(move);
 		}
 
 		tmpboard = prevMat;
 	}
-	//todo: then choose from this list a move which maximizes own scope.
+	// Then choose from the list a move which maximizes own scope.
+	auto maxsize = mvli.size();
+	auto res = mvli.front();
+	for (auto & move : mvli)
+	{
+		const auto currx = move.curr[X];
+		const auto curry = move.curr[Y];
+		const auto mvx = move.mvCoor[X];
+		const auto mvy = move.mvCoor[Y];
+		const auto shootx = move.shoot[X];
+		const auto shooty = move.shoot[Y];
 
-	return {};
+		// Make a tmp board with the player moves.
+		tmpboard[mvx][mvy] = tmpboard[currx][curry];
+		tmpboard[currx][curry] = blank;
+		tmpboard[shootx][shooty] = killed;
+
+		// Get the player's all possible moves and compare.
+		const auto tmpli = list_possible_moves(player, tmpboard);
+
+		if (tmpli.size() > maxsize)
+		{
+			res = move;
+			maxsize = tmpli.size();
+		}
+
+		tmpboard = prevMat;
+	}
+
+	return res;
 }
