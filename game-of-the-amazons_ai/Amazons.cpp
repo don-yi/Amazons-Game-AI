@@ -399,8 +399,23 @@ move amazons::next_move(const coord_status player, const AI ai) const
 			}
 		}
 		// Then choose from this list a move which minimizes opponent’s scope.
-		
-	}
+		auto minscope = oppoli.size();
+		auto res = maxli.front();
+		for (auto & mv : maxli)
+		{
+			// Make a tmp board with the player moves.
+			const auto tmpboard = make_tmp_board(mv, prevMat);
 
-	return {};
+			// Get the player's all possible moves and compare.
+			const auto currscope
+				= list_all_possible_moves(opponent, tmpboard).size();
+			if (currscope < static_cast<const unsigned>(minscope))
+			{
+				res = mv;
+				minscope = currscope;
+			}
+		}
+
+		return res;
+	}
 }
