@@ -31,6 +31,21 @@ void print_board(
 	std::cout << std::endl;
 }
 
+// Print the help page,
+void print_help()
+{
+	std::cout << "h for help (this page)" << std::endl;
+	std::cout << "l (lowercase L) for listing moves" << std::endl;
+	std::cout << "Making move: Target, Move & Shoot Coordinates" << std::endl;
+	std::cout
+		<< "ie. \"Move a player at (7, 6) to (7, 7) and shoot to (7, 6)\""
+		<< std::endl;
+	std::cout << "your input choices:" << std::endl;
+	std::cout << "7 6  7 7  7 6" << std::endl;
+	std::cout << "76 77 76" << std::endl;
+	std::cout << "767776" << std::endl;
+}
+
 // Print the list of moves.
 void print_moves(const std::list<move> li)
 {
@@ -100,11 +115,7 @@ int main()
 	}
 	std::cout << std::endl;
 
-	// input instruction
-	//std::cout << std::endl;
-	//std::cout << "AI?" << std::endl;
-	//std::cout << "1 for min/max" << std::endl;
-	//std::cout << "2 for max/min" << std::endl;
+
 
 	//const auto tmp = a1.next_move(amazons::white, amazons::maxMin);
 
