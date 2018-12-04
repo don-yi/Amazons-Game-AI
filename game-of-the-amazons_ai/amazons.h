@@ -25,6 +25,7 @@ private:
 	static bool is_blocked(const int* from, const int* dest, board mat);
 	static bool is_in_range(int const* from, int const* dest);
 	static std::list<move> list_possible_moves(int const* currpos, board mat);
+	static board make_tmp_board(move mv, board mat);
 
 public:
 	enum coord_status
@@ -80,7 +81,8 @@ public:
 		return newBoard;
 	}
 
-	// Read a board from a text file and convert it into a two dimensional array.
+	// Read a board from a text file and convert it
+		// into a two dimensional array.
 	board read_from_file(
 		const std::string& fileName
 	);
@@ -89,9 +91,11 @@ public:
 	// returning 1 for a valid move, and 0 for an invalid move.
 	static bool validate_move(move mv, board mat);
 
-	static std::list<move> list_all_possible_moves(coord_status player, board mat);
+	static std::list<move> list_all_possible_moves(
+		coord_status player, board mat
+	);
 
 	// Returns a move on the given board that can be played
 	// by the specified player.
-	move next_move(coord_status player, AI ai);
+	move next_move(coord_status player, AI ai) const;
 };

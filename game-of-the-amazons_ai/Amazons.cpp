@@ -296,7 +296,26 @@ std::list<move> amazons::list_all_possible_moves(
 	return res;
 }
 
-move amazons::next_move(const coord_status player, const AI ai)
+// Make a tmp board with a move.
+board amazons::make_tmp_board(const move mv, const board mat)
+{
+	auto res = mat;
+
+	const auto currx = mv.curr[X];
+	const auto curry = mv.curr[Y];
+	const auto mvx = mv.mvCoor[X];
+	const auto mvy = mv.mvCoor[Y];
+	const auto shootx = mv.shoot[X];
+	const auto shooty = mv.shoot[Y];
+
+	res[mvx][mvy] = res[currx][curry];
+	res[currx][curry] = blank;
+	res[shootx][shooty] = killed;
+
+	return res;
+}
+
+move amazons::next_move(const coord_status player, const AI ai) const
 {
 	// Identify the opponent.
 	coord_status opponent;
@@ -313,54 +332,15 @@ move amazons::next_move(const coord_status player, const AI ai)
 	auto myli = list_all_possible_moves(player, prevMat);
 	auto oppoli = list_all_possible_moves(opponent, prevMat);
 
-	//// Look for the player.
-	//for (auto i = 0; i < ROW_COUNT; ++i)
-	//{
-	//	for (auto j = 0; j < COL_COUNT; ++j)
-	//	{
-	//		int curr[2]{};
-	//		if (prevMat[i][j] == player)
-	//		{
-	//			curr[X] = i;
-	//			curr[Y] = j;
-	//			auto tmpmyli = list_possible_moves(curr, prevMat);
-	//			for (auto & mv : tmpmyli)
-	//			{
-	//				myli.push_back(mv);
-	//			}
-	//		}
-	//		else if (prevMat[i][j] == opponent)
-	//		{
-	//			curr[X] = i;
-	//			curr[Y] = j;
-	//			auto tmpoppoli = list_possible_moves(curr, prevMat);
-	//			for (auto & mv : tmpoppoli)
-	//			{
-	//				oppoli.push_back(mv);
-	//			}
-	//		}
-	//	}
-	//}
-
-	auto tmpboard = prevMat;
 	if (ai == minMax)
 	{
 		// Form a list consisting of all moves that minimize opponent’s scope.
 		auto minscope = oppoli.size();
 		std::list<move> minli;
-		for (auto & move : myli)
+		for (auto & mv : myli)
 		{
-			const auto currx = move.curr[X];
-			const auto curry = move.curr[Y];
-			const auto mvx = move.mvCoor[X];
-			const auto mvy = move.mvCoor[Y];
-			const auto shootx = move.shoot[X];
-			const auto shooty = move.shoot[Y];
-
 			// Make a tmp board with the player moves.
-			tmpboard[mvx][mvy] = tmpboard[currx][curry];
-			tmpboard[currx][curry] = blank;
-			tmpboard[shootx][shooty] = killed;
+			const auto tmpboard = make_tmp_board(mv, prevMat);
 
 			// Get the opponents's all possible moves and compare.
 			const auto tmpli = list_all_possible_moves(opponent, tmpboard);
@@ -372,28 +352,18 @@ move amazons::next_move(const coord_status player, const AI ai)
 					minscope = tmpli.size();
 					minli.clear();
 				}
-				minli.push_back(move);
+				minli.push_back(mv);
 			}
 
-			tmpboard = prevMat;
+			//tmpboard = prevMat;
 		}
 		// Then choose from the list a move which maximizes own scope.
 		auto maxscope = 0;
 		auto res = minli.front();
 		for (auto & mv : minli)
 		{
-			const auto currx = mv.curr[X];
-			const auto curry = mv.curr[Y];
-			const auto mvx = mv.mvCoor[X];
-			const auto mvy = mv.mvCoor[Y];
-			const auto shootx = mv.shoot[X];
-			const auto shooty = mv.shoot[Y];
-
-			// Make a tmp board and a move with the player moves.
-			tmpboard[mvx][mvy] = tmpboard[currx][curry];
-			tmpboard[currx][curry] = blank;
-			tmpboard[shootx][shooty] = killed;
-			//move tmpmv = { mv.mvCoor, }
+			// Make a tmp board with the player moves.
+			const auto tmpboard = make_tmp_board(mv, prevMat);
 
 			// Get the player's all possible moves and compare.
 			const auto currscope
@@ -404,12 +374,25 @@ move amazons::next_move(const coord_status player, const AI ai)
 				res = mv;
 				maxscope = currscope;
 			}
-
-			tmpboard = prevMat;
 		}
 
 		return res;
 	}
+	//else if (ai == maxMin)
+	//{
+	//	// Form a list consisting of all moves that maximize own scope.
+	//	auto maxscope = 0;
+	//	for (auto & mv : myli)
+	//	{
+	//		// Make a tmp board with the player moves.
+	//		const auto tmpboard = make_tmp_board(mv, prevMat);
+
+	//		
+	//	}
+
+	//	// Then choose from this list a move which minimizes opponent’s scope.
+	//	
+	//}
 
 	return {};
 }
