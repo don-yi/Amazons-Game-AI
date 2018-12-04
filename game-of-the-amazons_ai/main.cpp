@@ -32,7 +32,7 @@ void print_board(
 }
 
 // Print the list of moves.
-void print_possible_moves(const std::list<move> li)
+void print_moves(const std::list<move> li)
 {
 	std::cout << "Possible Target, Move & Shoot Coordinates:" << std::endl;
 	for (auto && move : li)
@@ -45,33 +45,50 @@ void print_possible_moves(const std::list<move> li)
 	std::cout << std::endl;
 }
 
-int main(void)
+int main()
 {
-	/////////////////////////////////
-	// TEST
-	/////////////////////////////////
-	//auto const& tmpBoard = generate_new_board();
+	// Input board.
+	std::cout << "Use StartBoard.txt/TestBoard.txt?" << std::endl;
+	std::cout << "type s for sb" << std::endl;
+	std::cout << "type t for tb" << std::endl;
 
 	amazons a1;
-	a1.read_from_file("TestBoard.txt");
+	const auto boardInput = getchar();
+	if (boardInput == 's')
+	{
+		a1.read_from_file("StartBoard.txt");
+	}
+	else if (boardInput == 't')
+	{
+		a1.read_from_file("TestBoard.txt");
+	}
+	std::cout << std::endl;
 	print_board(a1.prevMat);
 
-	const auto tmp = a1.next_move(amazons::white, amazons::maxMin);
+	//// Input player.
+	//std::cout << std::endl;
+	//std::cout << "Use black(1)/white(2)?" << std::endl;
+	//std::cout << "type b or w" << std::endl;
 
-	//const move m1 = { {7, 6}, {9, 6}, {7, 6} };
-	//std::cout << a1.validate_move(m1);
-
-	//if (a1.validate_move(m1))
+	//const auto playerInput = getchar();
+	//amazons::coord_status player;
+	//if (boardInput == 'b')
 	//{
-	//	print_board(a1.afterMat);
-	//	a1.prevMat = a1.afterMat;
-
-	//	//print_board(a1.afterMat);
+	//	player = amazons::black;
 	//}
+	//else if (boardInput == 'w')
+	//{
+	//	player = amazons::white;
+	//}
+	//std::cout << std::endl;
 
-	//print_possible_moves(a1.list_possible_moves(amazons::black));
-	//print_possible_moves(a1.list_possible_moves(amazons::white));
-	/////////////////////////////////
+	// Input AI.
+
+
+	//const auto tmp = a1.next_move(amazons::white, amazons::maxMin);
+
+	//print_moves(a1.list_moves(amazons::black));
+	//print_moves(a1.list_moves(amazons::white));
 
 	std::getchar();
 

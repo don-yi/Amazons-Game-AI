@@ -24,7 +24,7 @@ struct amazons
 private:
 	static bool is_blocked(const int* from, const int* dest, board mat);
 	static bool is_in_range(int const* from, int const* dest);
-	static std::list<move> list_possible_moves(int const* currpos, board mat);
+	static std::list<move> list_moves(int const* currpos, board mat);
 	static board make_tmp_board(move mv, board mat);
 
 public:
@@ -91,7 +91,7 @@ public:
 	// returning 1 for a valid move, and 0 for an invalid move.
 	static bool validate_move(move mv, board mat);
 
-	static std::list<move> list_all_possible_moves(
+	static std::list<move> list_all_moves(
 		coord_status player, board mat
 	);
 

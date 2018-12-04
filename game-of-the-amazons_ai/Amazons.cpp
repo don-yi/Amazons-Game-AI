@@ -215,7 +215,7 @@ bool amazons::validate_move(const move mv, board mat)
 }
 
 // Creates a list of the possible moves on given board for given player.
-std::list<move> amazons::list_possible_moves(
+std::list<move> amazons::list_moves(
 	int const* currpos, const board mat
 )
 {
@@ -266,7 +266,7 @@ std::list<move> amazons::list_possible_moves(
 }
 
 // Creates a list of the possible moves on given board for given player.
-std::list<move> amazons::list_all_possible_moves(
+std::list<move> amazons::list_all_moves(
 	const coord_status player, const board mat
 )
 {
@@ -284,7 +284,7 @@ std::list<move> amazons::list_all_possible_moves(
 				curr[X] = i;
 				curr[Y] = j;
 
-				auto tmpmyli = list_possible_moves(curr, mat);
+				auto tmpmyli = list_moves(curr, mat);
 				for (auto & mv : tmpmyli)
 				{
 					res.push_back(mv);
@@ -329,8 +329,8 @@ move amazons::next_move(const coord_status player, const AI ai) const
 	}
 
 	// Get the all possible moves from the both players.
-	auto myli = list_all_possible_moves(player, prevMat);
-	auto oppoli = list_all_possible_moves(opponent, prevMat);
+	auto myli = list_all_moves(player, prevMat);
+	auto oppoli = list_all_moves(opponent, prevMat);
 
 	if (ai == minMax)
 	{
@@ -344,7 +344,7 @@ move amazons::next_move(const coord_status player, const AI ai) const
 
 			// Get the opponents's all possible moves and compare.
 			const auto currscope
-				= list_all_possible_moves(opponent, tmpboard).size();
+				= list_all_moves(opponent, tmpboard).size();
 			if (currscope <= minscope)
 			{
 				if (currscope < minscope)
@@ -365,7 +365,7 @@ move amazons::next_move(const coord_status player, const AI ai) const
 
 			// Get the player's all possible moves and compare.
 			const auto currscope
-				= list_all_possible_moves(player, tmpboard).size();
+				= list_all_moves(player, tmpboard).size();
 			if (currscope > static_cast<const unsigned>(maxscope))
 			{
 				res = mv;
@@ -387,7 +387,7 @@ move amazons::next_move(const coord_status player, const AI ai) const
 
 			// Get the player's all possible moves and compare.
 			const auto currscope
-				= list_all_possible_moves(player, tmpboard).size();
+				= list_all_moves(player, tmpboard).size();
 			if (currscope >= static_cast<const unsigned>(maxscope))
 			{
 				if (currscope > static_cast<const unsigned>(maxscope))
@@ -408,7 +408,7 @@ move amazons::next_move(const coord_status player, const AI ai) const
 
 			// Get the player's all possible moves and compare.
 			const auto currscope
-				= list_all_possible_moves(opponent, tmpboard).size();
+				= list_all_moves(opponent, tmpboard).size();
 			if (currscope < static_cast<const unsigned>(minscope))
 			{
 				res = mv;
@@ -418,4 +418,6 @@ move amazons::next_move(const coord_status player, const AI ai) const
 
 		return res;
 	}
+
+	return {};
 }
