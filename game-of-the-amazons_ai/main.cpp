@@ -65,22 +65,22 @@ int main()
 	std::cout << std::endl;
 	print_board(a1.prevMat);
 
-	//// Input player.
-	//std::cout << std::endl;
-	//std::cout << "Use black(1)/white(2)?" << std::endl;
-	//std::cout << "type b or w" << std::endl;
+	// Input player.
+	std::cout << std::endl;
+	std::cout << "Use black(1)/white(2)?" << std::endl;
+	std::cout << "type b or w" << std::endl;
 
-	//const auto playerInput = getchar();
-	//amazons::coord_status player;
-	//if (boardInput == 'b')
-	//{
-	//	player = amazons::black;
-	//}
-	//else if (boardInput == 'w')
-	//{
-	//	player = amazons::white;
-	//}
-	//std::cout << std::endl;
+	const auto playerInput = getchar();
+	amazons::coord_status player;
+	if (boardInput == 'b')
+	{
+		player = amazons::black;
+	}
+	else if (boardInput == 'w')
+	{
+		player = amazons::white;
+	}
+	std::cout << std::endl;
 
 	// Input AI.
 
