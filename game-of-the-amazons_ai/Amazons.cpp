@@ -343,19 +343,17 @@ move amazons::next_move(const coord_status player, const AI ai) const
 			const auto tmpboard = make_tmp_board(mv, prevMat);
 
 			// Get the opponents's all possible moves and compare.
-			const auto tmpli = list_all_possible_moves(opponent, tmpboard);
-
-			if (tmpli.size() <= minscope)
+			const auto currscope
+				= list_all_possible_moves(opponent, tmpboard).size();
+			if (currscope <= minscope)
 			{
-				if (tmpli.size() < minscope)
+				if (currscope < minscope)
 				{
-					minscope = tmpli.size();
+					minscope = currscope;
 					minli.clear();
 				}
 				minli.push_back(mv);
 			}
-
-			//tmpboard = prevMat;
 		}
 		// Then choose from the list a move which maximizes own scope.
 		auto maxscope = 0;
@@ -367,8 +365,7 @@ move amazons::next_move(const coord_status player, const AI ai) const
 
 			// Get the player's all possible moves and compare.
 			const auto currscope
-			= list_all_possible_moves(player, tmpboard).size();
-
+				= list_all_possible_moves(player, tmpboard).size();
 			if (currscope > static_cast<const unsigned>(maxscope))
 			{
 				res = mv;
@@ -378,21 +375,32 @@ move amazons::next_move(const coord_status player, const AI ai) const
 
 		return res;
 	}
-	//else if (ai == maxMin)
-	//{
-	//	// Form a list consisting of all moves that maximize own scope.
-	//	auto maxscope = 0;
-	//	for (auto & mv : myli)
-	//	{
-	//		// Make a tmp board with the player moves.
-	//		const auto tmpboard = make_tmp_board(mv, prevMat);
+	else if (ai == maxMin)
+	{
+		// Form a list consisting of all moves that maximize own scope.
+		std::list<move> maxli;
+		auto maxscope = 0;
+		for (auto & mv : myli)
+		{
+			// Make a tmp board with the player moves.
+			const auto tmpboard = make_tmp_board(mv, prevMat);
 
-	//		
-	//	}
-
-	//	// Then choose from this list a move which minimizes opponent’s scope.
-	//	
-	//}
+			// Get the player's all possible moves and compare.
+			const auto currscope
+				= list_all_possible_moves(player, tmpboard).size();
+			if (currscope >= static_cast<const unsigned>(maxscope))
+			{
+				if (currscope > static_cast<const unsigned>(maxscope))
+				{
+					maxscope = currscope;
+					maxli.clear();
+				}
+				maxli.push_back(mv);
+			}
+		}
+		// Then choose from this list a move which minimizes opponent’s scope.
+		
+	}
 
 	return {};
 }

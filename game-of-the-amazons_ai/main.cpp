@@ -56,7 +56,7 @@ int main(void)
 	a1.read_from_file("TestBoard.txt");
 	print_board(a1.prevMat);
 
-	const auto tmp = a1.next_move(amazons::black, amazons::minMax);
+	const auto tmp = a1.next_move(amazons::black, amazons::maxMin);
 
 	//const move m1 = { {7, 6}, {9, 6}, {7, 6} };
 	//std::cout << a1.validate_move(m1);
