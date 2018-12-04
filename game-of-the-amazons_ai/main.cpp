@@ -83,7 +83,28 @@ int main()
 	std::cout << std::endl;
 
 	// Input AI.
+	std::cout << std::endl;
+	std::cout << "AI?" << std::endl;
+	std::cout << "1 for min/max" << std::endl;
+	std::cout << "2 for max/min" << std::endl;
 
+	const auto AIInput = getchar();
+	amazons::AI ai;
+	if (AIInput == '1')
+	{
+		ai = amazons::minMax;
+	}
+	else if (AIInput == '2')
+	{
+		ai = amazons::maxMin;
+	}
+	std::cout << std::endl;
+
+	// input instruction
+	//std::cout << std::endl;
+	//std::cout << "AI?" << std::endl;
+	//std::cout << "1 for min/max" << std::endl;
+	//std::cout << "2 for max/min" << std::endl;
 
 	//const auto tmp = a1.next_move(amazons::white, amazons::maxMin);
 
