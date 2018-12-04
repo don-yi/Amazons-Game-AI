@@ -43,12 +43,16 @@ void print_help()
 		<< std::endl;
 	std::cout << "your input choices:" << std::endl;
 	std::cout << "7 6  7 7  7 6" << std::endl;
-	std::cout << "76 77 76" << std::endl;
-	std::cout << "767776" << std::endl;
+	std::cout << "-------------" << std::endl;
+	std::cout << "7 6 7 7 7 6" << std::endl;
+	std::cout << "-------------" << std::endl;
+	std::cout << "7 6" << std::endl;
+	std::cout << "7 7" << std::endl;
+	std::cout << "7 6" << std::endl;
 }
 
 // Print the list of moves.
-void print_moves(const std::list<move> li)
+void print_move_list(const std::list<move> li)
 {
 	std::cout << "Possible Target, Move & Shoot Coordinates:" << std::endl;
 	for (auto && move : li)
@@ -93,6 +97,8 @@ int main()
 		}
 
 		// Input player.
+		amazons::coord_status player;
+		amazons::coord_status opponent;
 		while (true)
 		{
 			std::cout << std::endl;
@@ -100,8 +106,6 @@ int main()
 			std::cout << "type b or w" << std::endl;
 
 			const auto playerInput = getchar();
-			amazons::coord_status player;
-			amazons::coord_status opponent;
 			if (playerInput == 'b')
 			{
 				player = amazons::black;
@@ -117,6 +121,7 @@ int main()
 		}
 
 		// Input the turn.
+		bool isFirstTurn;
 		while (true)
 		{
 			std::cout << std::endl;
@@ -124,7 +129,6 @@ int main()
 			std::cout << "type 1 or 2" << std::endl;
 
 			const auto turnInput = getchar();
-			bool isFirstTurn;
 			if (turnInput == '1')
 			{
 				isFirstTurn = true;
@@ -138,6 +142,7 @@ int main()
 		}
 
 		// Input AI.
+		amazons::AI ai;
 		while (true)
 		{
 			std::cout << std::endl;
@@ -146,7 +151,6 @@ int main()
 			std::cout << "2 for max/min" << std::endl;
 
 			const auto AIInput = getchar();
-			amazons::AI ai;
 			if (AIInput == '1')
 			{
 				ai = amazons::minMax;
@@ -159,19 +163,77 @@ int main()
 			}
 		}
 
-		//// game loop
-		//auto plmvli = amazons::list_all_moves(player, a1.prevMat);
-		//auto oppomvli = amazons::list_all_moves(player, a1.prevMat);
-		//while ()
-		//{
+		// game loop
+		std::cout << std::endl;
+		print_help();
+		std::cout << std::endl;
+		print_board(a1.afterMat);
 
-		//}
+		auto plmvli = amazons::list_all_moves(player, a1.prevMat);
+		auto oppomvli = amazons::list_all_moves(opponent, a1.prevMat);
+
+		// Handle AI first turn.
+		if (!isFirstTurn)
+		{
+			std::cout << std::endl;
+			const auto AIMove = a1.next_move(opponent, ai);
+			a1.afterMat = amazons::make_tmp_board(AIMove, a1.prevMat);
+			plmvli = amazons::list_all_moves(player, a1.afterMat);
+
+			std::cout << "AI MOVED" << std::endl;
+			std::cout << "--------" << std::endl;
+			std::cout << std::endl;
+			print_board(a1.afterMat);
+		}
+
+		while (!plmvli.empty() || !oppomvli.empty())
+		{
+			while (true)
+			{
+				std::cout << std::endl;
+				std::cout << "waiting for an input: h, l, or m" << std::endl;
+
+				const auto input = std::getchar();
+				if (input == 'h')
+				{
+					std::cout << std::endl;
+					print_help();
+					break;
+				}
+				else if (input == 'l')
+				{
+					std::cout << std::endl;
+					print_move_list(plmvli);
+					break;
+				}
+				else if (input == 'm')
+				{
+					std::cout
+						<< "Making move: Target, Move & Shoot Coordinates"
+						<< std::endl;
+
+					move mvInput{};
+					std::cin >> mvInput.curr[X];
+					std::cin >> mvInput.curr[Y];
+					std::cin >> mvInput.mvCoor[X];
+					std::cin >> mvInput.mvCoor[Y];
+					std::cin >> mvInput.shoot[X];
+					std::cin >> mvInput.shoot[Y];
+
+					a1.afterMat
+						= amazons::make_tmp_board(mvInput, a1.prevMat);
+
+					std::cout << std::endl;
+					print_board(a1.afterMat);
+				}
+			}
+		}
 
 
 		//const auto tmp = a1.next_move(amazons::white, amazons::maxMin);
 
-		//print_moves(a1.list_moves(amazons::black));
-		//print_moves(a1.list_moves(amazons::white));
+		//print_move_list(a1.list_moves(amazons::black));
+		//print_move_list(a1.list_moves(amazons::white));
 
 	}
 

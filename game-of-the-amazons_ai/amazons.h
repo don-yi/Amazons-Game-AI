@@ -25,7 +25,6 @@ private:
 	static bool is_blocked(const int* from, const int* dest, board mat);
 	static bool is_in_range(int const* from, int const* dest);
 	static std::list<move> list_moves(int const* currpos, board mat);
-	static board make_tmp_board(move mv, board mat);
 
 public:
 	enum coord_status
@@ -95,7 +94,12 @@ public:
 		coord_status player, board mat
 	);
 
+	static board make_tmp_board(move mv, board mat);
+
 	// Returns a move on the given board that can be played
 	// by the specified player.
 	move next_move(coord_status player, AI ai) const;
+
+	// Plays AI.
+
 };
