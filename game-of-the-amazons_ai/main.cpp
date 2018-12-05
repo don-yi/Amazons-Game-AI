@@ -35,6 +35,7 @@ void print_board(
 void print_help()
 {
 	std::cout << "h for help (this page)" << std::endl;
+	std::cout << "c for current map" << std::endl;
 	std::cout << "l (lowercase L) for listing moves" << std::endl;
 	std::cout << "m to input a move" << std::endl;
 	std::cout << "Making move: Target, Move & Shoot Coordinates" << std::endl;
@@ -185,7 +186,7 @@ int main()
 			a1.prevMat = a1.afterMat;
 		}
 
-		while (!a1.plmvli.empty() || !a1.oppomvli.empty())
+		while (!a1.plmvli.empty() && !a1.oppomvli.empty())
 		{
 			while (true)
 			{
@@ -231,7 +232,15 @@ int main()
 					std::cout << std::endl;
 					print_board(a1.afterMat);
 
-					// AI turn.
+					// AI's turn.
+					std::cout << std::endl;
+					a1.play_AI(opponent, ai);
+
+					std::cout << "AI MOVED" << std::endl;
+					std::cout << "--------" << std::endl;
+					std::cout << std::endl;
+					print_board(a1.afterMat);
+					a1.prevMat = a1.afterMat;
 
 					break;
 				}
