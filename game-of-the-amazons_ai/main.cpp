@@ -177,10 +177,12 @@ int main()
 		if (!isFirstTurn)
 		{
 			std::cout << std::endl;
+			std::cout << "AI IS THINKING" << std::endl;
+			std::cout << "--------------" << std::endl;
 			a1.play_AI(opponent, ai);
 
-			std::cout << "AI MOVED" << std::endl;
-			std::cout << "--------" << std::endl;
+			std::cout << "AI HAS MOVED" << std::endl;
+			std::cout << "------------" << std::endl;
 			std::cout << std::endl;
 			print_board(a1.afterMat);
 			a1.prevMat = a1.afterMat;
@@ -191,13 +193,19 @@ int main()
 			while (true)
 			{
 				std::cout << std::endl;
-				std::cout << "waiting for an input: h, l, or m" << std::endl;
+				std::cout << "waiting for an input: h, c, l, or m" << std::endl;
 
 				const auto input = std::getchar();
 				if (input == 'h')
 				{
 					std::cout << std::endl;
 					print_help();
+					break;
+				}
+				else if (input == 'c')
+				{
+					std::cout << std::endl;
+					print_board(a1.afterMat);
 					break;
 				}
 				else if (input == 'l')
@@ -220,8 +228,10 @@ int main()
 					std::cin >> mvInput.shoot[X];
 					std::cin >> mvInput.shoot[Y];
 
-					a1.afterMat
-						= amazons::make_tmp_board(mvInput, a1.prevMat);
+				  if (amazons::validate_move(mvInput, a1.prevMat))
+				  {
+            a1.afterMat = amazons::make_tmp_board(mvInput, a1.prevMat);
+				  }
 
 					// Update the playable lists and the matrix.
 					a1.plmvli = amazons::list_all_moves(player, a1.afterMat);
@@ -234,11 +244,15 @@ int main()
 
 					// AI's turn.
 					std::cout << std::endl;
+					std::cout << "AI IS THINKING" << std::endl;
+					std::cout << "--------------" << std::endl;
 					a1.play_AI(opponent, ai);
 
-					std::cout << "AI MOVED" << std::endl;
-					std::cout << "--------" << std::endl;
+					std::cout << "AI HAS MOVED" << std::endl;
+					std::cout << "------------" << std::endl;
 					std::cout << std::endl;
+
+					// Print the result.
 					print_board(a1.afterMat);
 					a1.prevMat = a1.afterMat;
 
