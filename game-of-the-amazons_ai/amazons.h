@@ -43,6 +43,8 @@ public:
 
 	board prevMat = {};
 	board afterMat = {};
+	std::list<move> plmvli;
+	std::list<move> oppomvli;
 
 	// Not used.
 	// Make a new board.
@@ -101,5 +103,5 @@ public:
 	move next_move(coord_status player, AI ai) const;
 
 	// Plays AI.
-
+	void play_AI(coord_status opponent, AI ai);
 };

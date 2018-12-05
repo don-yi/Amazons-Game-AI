@@ -169,24 +169,25 @@ int main()
 		std::cout << std::endl;
 		print_board(a1.afterMat);
 
-		auto plmvli = amazons::list_all_moves(player, a1.prevMat);
-		auto oppomvli = amazons::list_all_moves(opponent, a1.prevMat);
+		a1.plmvli = amazons::list_all_moves(player, a1.prevMat);
+		a1.oppomvli = amazons::list_all_moves(opponent, a1.prevMat);
 
 		// Handle AI first turn.
 		if (!isFirstTurn)
 		{
 			std::cout << std::endl;
-			const auto AIMove = a1.next_move(opponent, ai);
-			a1.afterMat = amazons::make_tmp_board(AIMove, a1.prevMat);
-			plmvli = amazons::list_all_moves(player, a1.afterMat);
+			a1.play_AI(opponent, ai);
+			a1.plmvli = amazons::list_all_moves(player, a1.afterMat);
+			a1.oppomvli = amazons::list_all_moves(opponent, a1.afterMat);
 
 			std::cout << "AI MOVED" << std::endl;
 			std::cout << "--------" << std::endl;
 			std::cout << std::endl;
 			print_board(a1.afterMat);
+			a1.prevMat = a1.afterMat;
 		}
 
-		while (!plmvli.empty() || !oppomvli.empty())
+		while (!a1.plmvli.empty() || !a1.oppomvli.empty())
 		{
 			while (true)
 			{
@@ -203,7 +204,7 @@ int main()
 				else if (input == 'l')
 				{
 					std::cout << std::endl;
-					print_move_list(plmvli);
+					print_move_list(a1.plmvli);
 					break;
 				}
 				else if (input == 'm')
@@ -225,16 +226,11 @@ int main()
 
 					std::cout << std::endl;
 					print_board(a1.afterMat);
+					a1.prevMat = a1.afterMat;
+					break;
 				}
 			}
 		}
-
-
-		//const auto tmp = a1.next_move(amazons::white, amazons::maxMin);
-
-		//print_move_list(a1.list_moves(amazons::black));
-		//print_move_list(a1.list_moves(amazons::white));
-
 	}
 
 	return 0;

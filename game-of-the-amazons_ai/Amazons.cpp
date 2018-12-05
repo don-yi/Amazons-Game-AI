@@ -221,14 +221,6 @@ std::list<move> amazons::list_moves(
 {
 	std::list<move> res;
 
-	//// Look for the player.
-	//for (auto i = 0; i < ROW_COUNT; ++i)
-	//{
-	//	for (auto j = 0; j < COL_COUNT; ++j)
-	//	{
-			//if (prevMat[i][j] == player)
-			//{
-				// current player position
 	move mv{};
 	mv.curr[X] = currpos[X];
 	mv.curr[Y] = currpos[Y];
@@ -315,6 +307,8 @@ board amazons::make_tmp_board(const move mv, const board mat)
 	return res;
 }
 
+// Returns a move on the given board that can be played
+// by the specified player.
 move amazons::next_move(const coord_status player, const AI ai) const
 {
 	// Identify the opponent.
@@ -420,4 +414,26 @@ move amazons::next_move(const coord_status player, const AI ai) const
 	}
 
 	return {};
+}
+
+// Plays AI.
+void amazons::play_AI(const coord_status opponent, const AI ai)
+{
+	// Make a move and assign the result.
+	const auto AIMove = next_move(opponent, ai);
+	afterMat = amazons::make_tmp_board(AIMove, prevMat);
+
+	coord_status player = {};
+	if (opponent == black)
+	{
+		player = white;
+	}
+	else if (opponent == white)
+	{
+		player = black;
+	}
+
+	// Update the playable lists.
+	plmvli = amazons::list_all_moves(player, afterMat);
+	oppomvli = amazons::list_all_moves(opponent, afterMat);
 }
