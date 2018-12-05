@@ -177,8 +177,6 @@ int main()
 		{
 			std::cout << std::endl;
 			a1.play_AI(opponent, ai);
-			a1.plmvli = amazons::list_all_moves(player, a1.afterMat);
-			a1.oppomvli = amazons::list_all_moves(opponent, a1.afterMat);
 
 			std::cout << "AI MOVED" << std::endl;
 			std::cout << "--------" << std::endl;
@@ -224,9 +222,17 @@ int main()
 					a1.afterMat
 						= amazons::make_tmp_board(mvInput, a1.prevMat);
 
+					// Update the playable lists and the matrix.
+					a1.plmvli = amazons::list_all_moves(player, a1.afterMat);
+					a1.oppomvli
+						= amazons::list_all_moves(opponent, a1.afterMat);
+					a1.prevMat = a1.afterMat;
+
 					std::cout << std::endl;
 					print_board(a1.afterMat);
-					a1.prevMat = a1.afterMat;
+
+					// AI turn.
+
 					break;
 				}
 			}
