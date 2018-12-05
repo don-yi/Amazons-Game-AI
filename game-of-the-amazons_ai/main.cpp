@@ -232,6 +232,10 @@ int main()
 				  {
             a1.afterMat = amazons::make_tmp_board(mvInput, a1.prevMat);
 				  }
+				  else
+				  {
+				    continue;
+				  }
 
 					// Update the playable lists and the matrix.
 					a1.plmvli = amazons::list_all_moves(player, a1.afterMat);
